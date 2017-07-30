@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+        http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+		http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+	
+<!-- 	<import resource="classpath*:spring/oas-data-dao.root.xml"/> -->
+	
+	<context:annotation-config />
+	
+	<context:component-scan base-package="com.mwb.dao.mapper" />
+
+	<bean
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath*:config.properties</value>
+			</list>
+		</property>
+	</bean> 
+	
+	<bean 
+		id="dataSource" 
+		class="com.mchange.v2.c3p0.ComboPooledDataSource" >
+
+		<property name="driverClass">
+			<value>${database.driver.class}</value>
+		</property>
+		
+		<property name="jdbcUrl">
+			<value>${database.jdbc.url}</value>
+		</property>
+		
+		<property name="user">
+			<value>${database.user}</value>
+		</property>
+		
+		<property name="password">
+			<value>${database.password}</value>
+		</property>
+		
+		<property name="initialPoolSize">
+			<value>${database.initial.pool.size}</value>
+		</property>
+		
+		<property name="minPoolSize">
+			<value>${database.min.pool.size}</value>
+		</property>
+		
+		<property name="maxPoolSize">
+			<value>${database.max.pool.size}</value>
+		</property>
+		
+		<property name="acquireIncrement">
+			<value>${database.acquire.increment}</value>
+		</property>
+		
+		<property name="maxIdleTime">
+			<value>${database.max.idle.time}</value>
+		</property>
+		
+		<property name="maxStatements">
+			<value>0</value>
+		</property>
+
+	</bean>
+	
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+	
+	<bean 
+		id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<bean 
+		id="sqlSessionFactory" 
+		class="org.mybatis.spring.SqlSessionFactoryBean">
+		
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation" value="classpath:configs/mybatis-config.xml" />
+		<property name="mapperLocations" value="classpath*:mappers/**/*.xml" />
+	</bean>
+	<bean
+		id="mapperScannerConfigurer"
+		class="com.mwb.util.mybatis.BasePackageRetrievableMapperScannerConfigurer">
+
+		<property name="basePackage" value="com.mwb.dao.mapper" />
+	</bean>
+
+	<!--<bean id="daoLaoKeService" class="com.mwb.service.dataoke.DaoLaoKeService">-->
+		<!--<property name="appKey" value="2222" />-->
+	<!--</bean>-->
+</beans>
